@@ -156,7 +156,7 @@ export default function AiRetroModal({
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-slate-800">BalaBoard AI Intelligence</h2>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
-                  Groq Llama 3.3 (800 t/s)
+                  ⚡ Groq AI (Ultra Fast)
                 </span>
               </div>
               <p className="text-xs text-slate-500">
@@ -445,7 +445,7 @@ export default function AiRetroModal({
                     }`}
                   >
                     ⚡ Groq Cloud (Ultra Fast)
-                    <span className="block text-[10px] font-normal text-slate-500 mt-0.5">800 t/s Llama 3.3 70B ($0 cost)</span>
+                    <span className="block text-[10px] font-normal text-slate-500 mt-0.5">Qwen 27B / GPT-OSS ($0 cost)</span>
                   </button>
                   <button
                     type="button"

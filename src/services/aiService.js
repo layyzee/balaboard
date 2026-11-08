@@ -1,12 +1,20 @@
 // BalaBoard AI Retrospective Intelligence Service
-// Powered by Groq Cloud (Llama 3.3 70B Versatile) and local Ollama fallback
+// Powered by Groq Cloud (Qwen 3.8 27B / GPT-OSS 120B) and local Ollama fallback
 
 const DEFAULT_GROQ_KEY = 'gsk_' + 'BXpU0bpmJUYLzZr8onZSWGdyb3FYvx7ZxP7uG6Wk1GFpE1fq9QPU';
+const DEFAULT_MODEL = 'qwen/qwen3.8-27b';
 
 export function getAiConfig() {
   const savedKey = localStorage.getItem('balaboard_groq_api_key');
   const provider = localStorage.getItem('balaboard_ai_provider') || 'groq'; // 'groq' | 'ollama'
-  const model = localStorage.getItem('balaboard_ai_model') || (provider === 'groq' ? 'llama-3.3-70b-versatile' : 'llama3');
+  let model = localStorage.getItem('balaboard_ai_model');
+
+  // Auto-heal any stale or deprecated Groq models
+  if (!model || model === 'llama-3.3-70b-versatile' || model === 'llama3-70b-8192') {
+    model = provider === 'groq' ? DEFAULT_MODEL : 'llama3';
+    localStorage.setItem('balaboard_ai_model', model);
+  }
+
   const ollamaUrl = localStorage.getItem('balaboard_ollama_url') || 'http://localhost:11434';
 
   return {
@@ -43,15 +51,18 @@ async function callLlm(prompt, systemInstruction = "You are an elite Agile Retro
     return data.response;
   }
 
-  // Call Groq Cloud API
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  // Call Groq Cloud API with automatic model fallback
+  let activeModel = config.model || DEFAULT_MODEL;
+  if (activeModel === 'llama-3.3-70b-versatile') activeModel = DEFAULT_MODEL;
+
+  let res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${config.apiKey}`
     },
     body: JSON.stringify({
-      model: config.model || 'llama-3.3-70b-versatile',
+      model: activeModel,
       messages: [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: prompt }
@@ -61,13 +72,35 @@ async function callLlm(prompt, systemInstruction = "You are an elite Agile Retro
     })
   });
 
+  // Fallback if model was not found
+  if (!res.ok && res.status === 404 && activeModel !== 'openai/gpt-oss-120b') {
+    console.warn(`Model ${activeModel} not found, falling back to openai/gpt-oss-120b`);
+    res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${config.apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-oss-120b',
+        messages: [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.5,
+        max_tokens: 1800
+      })
+    });
+  }
+
   if (!res.ok) {
     const errBody = await res.text();
     throw new Error(`AI API error (${res.status}): ${errBody}`);
   }
 
   const json = await res.json();
-  return json.choices?.[0]?.message?.content || '';
+  const choice = json.choices?.[0]?.message;
+  return choice?.content || choice?.reasoning || '';
 }
 
 /**
