@@ -8,6 +8,7 @@ import Minimap from './components/Minimap';
 import CanvasToolPalette from './components/CanvasToolPalette';
 import PreRetroSetupModal from './components/PreRetroSetupModal';
 import UserLoginModal, { PRESET_USERS } from './components/UserLoginModal';
+import JoinRoomModal from './components/JoinRoomModal';
 import ShareBoardModal from './components/ShareBoardModal';
 import ActionItemsDrawer from './components/ActionItemsDrawer';
 import AiRetroModal from './components/AiRetroModal';
@@ -137,6 +138,23 @@ export default function App() {
     if (!params.get('room') && !localStorage.getItem('balaboard_seen_welcome')) return true;
     return false;
   });
+
+  // Option A: 1-Step "Enter Your Name" Join Modal
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sandbox') === 'true' || params.get('demo') === 'true') return false;
+    const hasConfigured = localStorage.getItem('balaboard_identity_configured');
+    if (hasConfigured) return false;
+    if (params.get('room')) return true;
+    return false;
+  });
+
+  const handleJoinRoom = useCallback((newUser) => {
+    setCurrentUser(newUser);
+    localStorage.setItem('balaboard_current_user', JSON.stringify(newUser));
+    localStorage.setItem('balaboard_identity_configured', 'true');
+    setIsJoinModalOpen(false);
+  }, []);
 
   const canvasContainerRef = useRef(null);
 
@@ -871,6 +889,15 @@ export default function App() {
         onClose={() => setIsUserModalOpen(false)}
         currentUser={currentUser}
         onSelectUser={setCurrentUser}
+      />
+
+      {/* Option A: 1-Step "Enter Your Name" Join Modal */}
+      <JoinRoomModal
+        isOpen={isJoinModalOpen}
+        roomId={roomId}
+        currentUser={currentUser}
+        onJoin={handleJoinRoom}
+        onContinueAsGuest={(guestUser) => handleJoinRoom(guestUser)}
       />
 
       {/* Share Board & Real-Time Sync Modal */}
