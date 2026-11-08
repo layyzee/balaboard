@@ -349,14 +349,14 @@ export default function Toolbar({
               title="Start 60-Second Guided Tour for Recruiters & Teams"
             >
               <Sparkles size={12} className="animate-spin text-amber-200" />
-              <span className="hidden xl:inline">Demo Tour</span>
-              <span className="xl:hidden">Tour</span>
+              <span className="hidden 2xl:inline">Demo Tour</span>
+              <span className="hidden sm:inline 2xl:hidden">Tour</span>
             </button>
           )}
         </div>
 
         {/* Center Section: Facilitation Stepper & Retro Controls */}
-        <div className="flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-md border border-slate-200/90 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-2xl shadow-xl shrink min-w-0">
+        <div className="flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-md border border-slate-200/90 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-2xl shadow-xl shrink-0">
           {/* Step Prev */}
           <button
             onClick={handlePrevPhase}
@@ -371,14 +371,14 @@ export default function Toolbar({
           {isCompactStepper ? (
             <button
               onClick={() => setIsCompactStepper(false)}
-              className="flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-xl bg-indigo-600 text-white text-xs font-bold shadow-xs truncate"
+              className="flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-xl bg-indigo-600 text-white text-xs font-bold shadow-xs truncate shrink-0 max-w-[140px] sm:max-w-[190px]"
               title="Click to view all steps"
             >
               <span>{activePhase.icon}</span>
               <span className="truncate">Step {currentPhaseIndex + 1}: {activePhase.label}</span>
             </button>
           ) : (
-            <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto scrollbar-none shrink-0">
               {RETRO_PHASES.map((phase, idx) => {
                 const isActive = idx === currentPhaseIndex;
                 const isCompleted = idx < currentPhaseIndex;
@@ -428,7 +428,7 @@ export default function Toolbar({
                 title="Toggle Icebreaker Question"
               >
                 <span>🎲</span>
-                <span className="hidden xl:inline">Icebreaker</span>
+                <span className="hidden 2xl:inline">Icebreaker</span>
               </button>
             )}
 
@@ -446,7 +446,7 @@ export default function Toolbar({
               title={areNotesRevealed ? "Notes are visible" : "Notes are private (click to reveal)"}
             >
               {areNotesRevealed ? <Eye size={13} /> : <EyeOff size={13} />}
-              <span className="hidden xl:inline">{areNotesRevealed ? 'Revealed' : 'Reveal All'}</span>
+              <span className="hidden 2xl:inline">{areNotesRevealed ? 'Revealed' : 'Reveal All'}</span>
             </button>
 
             {/* Auto-Cluster Button */}
@@ -460,7 +460,7 @@ export default function Toolbar({
               title="Auto-organize stickies into categories"
             >
               <Layers size={13} />
-              <span className="hidden xl:inline">Cluster</span>
+              <span className="hidden 2xl:inline">Cluster</span>
             </button>
 
             {/* Miro Spotlight Mode */}
@@ -481,7 +481,7 @@ export default function Toolbar({
               title={isSpotlightingActive ? "Stop spotlighting" : "Miro Spotlight: Bring everyone's viewport to my view"}
             >
               <Radio size={13} className={isSpotlightingActive ? 'animate-spin' : ''} />
-              <span className="hidden xl:inline">{isSpotlightingActive ? 'Spotlight' : 'Spotlight'}</span>
+              <span className="hidden 2xl:inline">{isSpotlightingActive ? 'Spotlight' : 'Spotlight'}</span>
             </button>
 
             {/* Toggle Compact Stepper Button */}
@@ -620,7 +620,7 @@ export default function Toolbar({
             title="Share live board link with team"
           >
             <Share2 size={13} />
-            <span className="hidden xl:inline">Share</span>
+            <span className="hidden 2xl:inline">Share</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           </button>
 
