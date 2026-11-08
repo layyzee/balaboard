@@ -101,13 +101,22 @@ Jump straight into structured retrospectives with pre-built interactive template
 - **Top or Bottom Docking:** Dock the navigation toolbar to the top or bottom of the screen with automatic HUD offset adjustment.
 - **Slim Minimized Mode:** Collapse all controls into a compact, non-intrusive floating pill.
 
+### 14. 🎫 Direct Jira Cloud Issue Creation & Live Badging
+- Push any retrospective sticky note or action item directly into your team's Jira backlog.
+- Pre-fills rich retrospective metadata: Meeting Title, Framework, Author, Upvotes, and Acceptance Criteria.
+- Supports Project Keys (`SCRUM`, `KAN`, `AGILE`, `ENG`), Issue Types (`Task`, `Story`, `Bug`, `Spike`), and Priorities.
+- Attaches an interactive, live Atlassian Jira badge (`[Jira] SCRUM-173 ↗`) with direct ticket links.
+- Interactive sandbox mode enabled so interviewers and teammates can test the Jira workflow live without enterprise credentials.
+
 <br/>
 
 <div align="center">
 
-| Minimized Floating Island | Docked to Bottom Layout |
-|:---:|:---:|
-| ![Minimized](docs/screenshots/minimized.png) | ![Docked Bottom](docs/screenshots/docked_bottom.png) |
+| Minimized Floating Island | Docked to Bottom Layout | Direct Jira Integration |
+|:---:|:---:|:---:|
+| ![Minimized](docs/screenshots/minimized.png) | ![Docked Bottom](docs/screenshots/docked_bottom.png) | ![Jira Integration](docs/screenshots/jira_integration.png) |
+
+</div>
 
 </div>
 

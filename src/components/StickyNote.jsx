@@ -18,7 +18,8 @@ export default function StickyNote({
   activeTool = 'select',
   onNoteClickInConnectorMode,
   isConnectorSource = false,
-  activeTagFilter = null
+  activeTagFilter = null,
+  onOpenJiraModal
 }) {
   const [isEditing, setIsEditing] = useState(!note.text);
   const [text, setText] = useState(note.text || '');
@@ -217,6 +218,26 @@ export default function StickyNote({
           >
             <Tag size={13} />
           </button>
+
+          {/* Push to Jira Issue Trigger */}
+          {onOpenJiraModal && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenJiraModal({ type: 'note', item: note });
+              }}
+              className={`p-1 rounded-lg transition-colors ${
+                note.jiraIssue
+                  ? 'bg-blue-600 text-white'
+                  : 'hover:bg-blue-50 text-slate-700 hover:text-blue-700'
+              }`}
+              title={note.jiraIssue ? `Linked to Jira: ${note.jiraIssue.key}` : "Push note to Jira Issue"}
+            >
+              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                <path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V2h-10.48zm-5.76 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V7.82H5.77zm-5.77 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35v-10.44H0z"/>
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Delete button */}
@@ -329,19 +350,33 @@ export default function StickyNote({
         )}
       </div>
 
-      {/* Attached Tags Chips */}
-      {note.tags && note.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 my-1">
-          {note.tags.map((t) => (
-            <span
-              key={t}
-              className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-white/70 text-slate-700 border border-black/5"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Attached Tags & Jira Badge */}
+      <div className="flex flex-wrap items-center gap-1 my-1">
+        {note.jiraIssue && (
+          <a
+            href={note.jiraIssue.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors shrink-0"
+            title={`Jira Issue: ${note.jiraIssue.key} - ${note.jiraIssue.summary || ''}`}
+          >
+            <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+              <path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V2h-10.48zm-5.76 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V7.82H5.77zm-5.77 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35v-10.44H0z"/>
+            </svg>
+            <span>{note.jiraIssue.key}</span>
+            <span className="text-[7px] opacity-80">↗</span>
+          </a>
+        )}
+        {note.tags && note.tags.map((t) => (
+          <span
+            key={t}
+            className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-white/70 text-slate-700 border border-black/5"
+          >
+            {t}
+          </span>
+        ))}
+      </div>
 
       {/* Footer: Author Badge & Reactions / Dot Voting Counter */}
       <div className="flex items-center justify-between pt-1 border-t border-black/5">

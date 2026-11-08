@@ -10,7 +10,8 @@ export default function ActionItemsDrawer({
   onAddActionItem,
   onToggleActionItem,
   onDeleteActionItem,
-  onConvertNoteToAction
+  onConvertNoteToAction,
+  onOpenJiraModal
 }) {
   const [newTitle, setNewTitle] = useState('');
   const [newAssignee, setNewAssignee] = useState('');
@@ -196,9 +197,39 @@ export default function ActionItemsDrawer({
                       <p className={`font-medium break-words leading-snug ${item.completed ? 'line-through text-slate-400' : ''}`}>
                         {item.title}
                       </p>
-                      <span className="text-[10px] text-indigo-600 font-semibold mt-0.5 inline-block">
-                        @{item.assignee}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <span className="text-[10px] text-indigo-600 font-semibold">
+                          @{item.assignee}
+                        </span>
+                        {item.jiraIssue ? (
+                          <a
+                            href={item.jiraIssue.url || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors shrink-0"
+                            title={`Jira Issue: ${item.jiraIssue.key} - ${item.jiraIssue.summary || ''}`}
+                          >
+                            <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                              <path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V2h-10.48zm-5.76 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V7.82H5.77zm-5.77 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35v-10.44H0z"/>
+                            </svg>
+                            <span>{item.jiraIssue.key}</span>
+                            <span className="text-[7px] opacity-80">↗</span>
+                          </a>
+                        ) : (
+                          onOpenJiraModal && (
+                            <button
+                              onClick={() => onOpenJiraModal({ type: 'action', item })}
+                              className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 transition-colors"
+                              title="Push this action item directly to Jira"
+                            >
+                              <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                                <path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V2h-10.48zm-5.76 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35V7.82H5.77zm-5.77 5.82c0 2.4 1.97 4.35 4.35 4.35h1.78v1.74c0 2.4 1.97 4.35 4.35 4.35v-10.44H0z"/>
+                              </svg>
+                              <span>+ Jira</span>
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
 

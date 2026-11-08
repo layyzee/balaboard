@@ -12,6 +12,7 @@ import ShareBoardModal from './components/ShareBoardModal';
 import ActionItemsDrawer from './components/ActionItemsDrawer';
 import AiRetroModal from './components/AiRetroModal';
 import IntegrationsModal from './components/IntegrationsModal';
+import JiraIssueModal from './components/JiraIssueModal';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
 import { playSound } from './utils/sound';
 
@@ -118,6 +119,8 @@ export default function App() {
   const [isActionDrawerOpen, setIsActionDrawerOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState(false);
+  const [isJiraModalOpen, setIsJiraModalOpen] = useState(false);
+  const [jiraSourceItem, setJiraSourceItem] = useState(null);
   const [isSpotlightingActive, setIsSpotlightingActive] = useState(false);
   const [activeSpotlight, setActiveSpotlight] = useState(null);
 
@@ -543,6 +546,30 @@ export default function App() {
     setIsActionDrawerOpen(true);
   };
 
+  // Jira Issue Handlers (Phase 13)
+  const handleOpenJiraModal = (source) => {
+    setJiraSourceItem(source);
+    setIsJiraModalOpen(true);
+  };
+
+  const handleCreateJiraIssue = (sourceItem, jiraData) => {
+    if (sourceItem.type === 'note') {
+      const noteId = sourceItem.item.id;
+      setStickyNotes(prev => {
+        const next = prev.map(n => n.id === noteId ? { ...n, jiraIssue: jiraData } : n);
+        return next;
+      });
+      sendNoteUpdate(noteId, { jiraIssue: jiraData });
+    } else if (sourceItem.type === 'action') {
+      const actId = sourceItem.item.id;
+      setActionItems(prev => {
+        const next = prev.map(a => a.id === actId ? { ...a, jiraIssue: jiraData } : a);
+        sendActionItemsUpdate(next);
+        return next;
+      });
+    }
+  };
+
   // AI SMART Actions Importer
   const handleImportSmartActions = (items) => {
     const formatted = items.map(act => ({
@@ -755,6 +782,7 @@ export default function App() {
           onNoteClickInConnectorMode={handleNoteClickInConnectorMode}
           connectingFromNoteId={connectingFromNoteId}
           activeTagFilter={activeTagFilter}
+          onOpenJiraModal={handleOpenJiraModal}
         />
       </main>
 
@@ -805,6 +833,7 @@ export default function App() {
         onToggleActionItem={handleToggleActionItem}
         onDeleteActionItem={handleDeleteActionItem}
         onConvertNoteToAction={handleConvertNoteToAction}
+        onOpenJiraModal={handleOpenJiraModal}
       />
 
       {/* AI Retrospective Intelligence Modal (Phase 9) */}
@@ -827,6 +856,16 @@ export default function App() {
         stickyNotes={stickyNotes}
         actionItems={actionItems}
         currentUser={currentUser}
+      />
+
+      {/* Jira Issue Creation Modal (Phase 13) */}
+      <JiraIssueModal
+        isOpen={isJiraModalOpen}
+        onClose={() => setIsJiraModalOpen(false)}
+        sourceItem={jiraSourceItem}
+        activeTemplate={activeTemplate}
+        meetingSettings={meetingSettings}
+        onCreateJiraIssue={handleCreateJiraIssue}
       />
     </div>
   );

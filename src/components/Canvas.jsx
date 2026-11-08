@@ -31,7 +31,8 @@ export default function Canvas({
   onDeleteConnector,
   onNoteClickInConnectorMode,
   connectingFromNoteId = null,
-  activeTagFilter = null
+  activeTagFilter = null,
+  onOpenJiraModal
 }) {
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -257,6 +258,7 @@ export default function Canvas({
             onNoteClickInConnectorMode={onNoteClickInConnectorMode}
             isConnectorSource={connectingFromNoteId === note.id}
             activeTagFilter={activeTagFilter}
+            onOpenJiraModal={onOpenJiraModal}
           />
         ))}
       </div>
