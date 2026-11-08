@@ -59,6 +59,7 @@ export default function ShareBoardModal({
           <button
             onClick={onClose}
             className="p-1.5 rounded-full hover:bg-slate-200/70 text-slate-400 hover:text-slate-600 transition-colors"
+            title="Close Share Modal"
           >
             <X size={18} />
           </button>

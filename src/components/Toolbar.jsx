@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Plus, 
   Clock, 
@@ -91,6 +91,38 @@ export default function Toolbar({
   const [showColorMenu, setShowColorMenu] = useState(false);
   const [selectedStickyColor, setSelectedStickyColor] = useState('yellow');
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const toolbarRef = useRef(null);
+
+  // Close all popovers when clicking outside the toolbar
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
+        setShowColorMenu(false);
+        setShowTimerMenu(false);
+        setShowExportMenu(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
+  }, []);
+
+  const handleToggleColorMenu = () => {
+    setShowColorMenu(prev => !prev);
+    setShowTimerMenu(false);
+    setShowExportMenu(false);
+  };
+
+  const handleToggleTimerMenu = () => {
+    setShowTimerMenu(prev => !prev);
+    setShowColorMenu(false);
+    setShowExportMenu(false);
+  };
+
+  const handleToggleExportMenu = () => {
+    setShowExportMenu(prev => !prev);
+    setShowColorMenu(false);
+    setShowTimerMenu(false);
+  };
 
   const handleToggleMusic = () => {
     if (isMusicPlaying) {
@@ -206,7 +238,7 @@ export default function Toolbar({
             title="Quick Add Sticky Note"
           >
             <Plus size={14} />
-            <span>+ Sticky</span>
+            <span>Sticky</span>
           </button>
 
           {/* Timer Display */}
@@ -286,7 +318,7 @@ export default function Toolbar({
   // 2. UNIFIED FULL EXPANDED HEADER (RESPONSIVE)
   // ==========================================
   return (
-    <div className={`fixed ${positionClass} left-1 right-1 sm:left-3 sm:right-3 z-40 flex flex-col items-center pointer-events-none transition-all`}>
+    <div ref={toolbarRef} className={`fixed ${positionClass} left-1 right-1 sm:left-3 sm:right-3 z-40 flex ${dockPosition === 'bottom' ? 'flex-col-reverse' : 'flex-col'} items-center pointer-events-none transition-all`}>
       {/* Main Single-Bar Navigation Island */}
       <header className="w-full max-w-full flex items-center justify-between gap-1 sm:gap-2 pointer-events-auto">
         {/* Left Section: Logo & Miro Templates */}
@@ -475,13 +507,13 @@ export default function Toolbar({
             title="Add new Sticky Note to canvas"
           >
             <Plus size={14} />
-            <span className="hidden sm:inline">+ Sticky</span>
+            <span className="hidden sm:inline">Sticky</span>
           </button>
 
           {/* Compact Color Picker Trigger with Popover */}
           <div className="relative">
             <button
-              onClick={() => setShowColorMenu(!showColorMenu)}
+              onClick={handleToggleColorMenu}
               className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center shadow-xs ${PASTEL_COLORS[selectedStickyColor].dot} ${PASTEL_COLORS[selectedStickyColor].border}`}
               title={`Color: ${PASTEL_COLORS[selectedStickyColor].label} (Click to change)`}
             />
@@ -511,7 +543,7 @@ export default function Toolbar({
             <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/80 rounded-xl px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs text-slate-700 transition-colors">
               <Clock size={12} className={isTimerRunning ? 'text-amber-500 animate-spin' : 'text-slate-500'} />
               <button 
-                onClick={() => setShowTimerMenu(!showTimerMenu)} 
+                onClick={handleToggleTimerMenu} 
                 className="font-mono font-bold w-10 sm:w-11 text-center text-xs"
                 title="Change duration"
               >
@@ -646,7 +678,7 @@ export default function Toolbar({
             {/* Export Menu Dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
+                onClick={handleToggleExportMenu}
                 className="p-1 sm:px-1.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
                 title="Export Board (PNG, Markdown, JSON)"
               >
@@ -736,7 +768,7 @@ export default function Toolbar({
 
       {/* Icebreaker Card Banner (Positioned directly below center stepper with clear margins) */}
       {currentPhaseIndex === 0 && showIcebreakerBanner && (
-        <div className="mt-2 bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-200/90 px-4 py-2 rounded-2xl shadow-xl pointer-events-auto flex items-center justify-between gap-3 max-w-xl w-full animate-slideDown">
+        <div className={`${dockPosition === 'bottom' ? 'mb-2 animate-fadeIn' : 'mt-2 animate-slideDown'} bg-gradient-to-r from-amber-50 via-white to-orange-50 border border-amber-200/90 px-4 py-2 rounded-2xl shadow-xl pointer-events-auto flex items-center justify-between gap-3 max-w-xl w-full`}>
           <div className="flex items-center gap-2">
             <span className="text-xl">🎲</span>
             <div>

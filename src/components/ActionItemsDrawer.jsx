@@ -88,6 +88,7 @@ export default function ActionItemsDrawer({
         <button
           onClick={onClose}
           className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"
+          title="Close Action Drawer"
         >
           <X size={16} />
         </button>

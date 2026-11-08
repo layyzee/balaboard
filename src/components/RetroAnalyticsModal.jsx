@@ -148,6 +148,7 @@ export default function RetroAnalyticsModal({
           <button
             onClick={onClose}
             className="p-1.5 rounded-full hover:bg-white/20 text-purple-100 hover:text-white transition-colors"
+            title="Close Analytics Modal"
           >
             <X size={18} />
           </button>

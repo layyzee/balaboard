@@ -109,6 +109,7 @@ export default function PreRetroSetupModal({
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+            title="Close Templates Modal"
           >
             <X size={18} />
           </button>
