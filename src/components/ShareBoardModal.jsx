@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Share2, Wifi, Globe, Users, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, Copy, Check, Share2, Wifi, Globe, Users, ArrowRight, ShieldCheck, Rocket } from 'lucide-react';
 
 export default function ShareBoardModal({
   isOpen,
@@ -119,6 +119,41 @@ export default function ShareBoardModal({
             <p className="text-[11px] text-slate-400">
               100% Free ($0.00), no registration required.
             </p>
+          </div>
+
+          {/* Method 3: Permanent 24/7 Cloud Host (Render) */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/80 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-purple-900">
+                <Rocket size={15} className="text-purple-600" />
+                <span>Permanent 24/7 Cloud Host (Render)</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+                $0.00 Free
+              </span>
+            </div>
+            <p className="text-xs text-purple-800/80 leading-relaxed">
+              Deploy your board live 24/7 with permanent URL on Render's free tier.
+            </p>
+            <div className="pt-1 flex items-center gap-2">
+              <a
+                href="https://render.com/deploy?repo=https://github.com/layyzee/balaboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition-transform hover:scale-105"
+              >
+                <span>1-Click Deploy Blueprint</span>
+                <ArrowRight size={13} />
+              </a>
+              <a
+                href="https://github.com/layyzee/balaboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold transition-colors"
+              >
+                <span>GitHub Repo</span>
+              </a>
+            </div>
           </div>
 
           {/* Room Details */}
