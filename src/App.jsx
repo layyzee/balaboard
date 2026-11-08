@@ -444,10 +444,74 @@ export default function App() {
     setPan({ x: 80, y: dockPosition === 'bottom' ? 60 : 110 });
   };
 
-  const handleFitScreen = () => {
-    setScale(0.8);
-    setPan({ x: 60, y: dockPosition === 'bottom' ? 60 : 100 });
-  };
+  // Dynamic Responsive Auto-Fit to Window
+  const handleFitScreen = useCallback((targetTemplate = activeTemplate, notes = stickyNotes) => {
+    if (!targetTemplate?.zones || targetTemplate.zones.length === 0) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    targetTemplate.zones.forEach(z => {
+      minX = Math.min(minX, z.x);
+      minY = Math.min(minY, z.y);
+      maxX = Math.max(maxX, z.x + (z.width || 480));
+      maxY = Math.max(maxY, z.y + (z.height || 380));
+    });
+
+    if (notes && notes.length > 0) {
+      notes.forEach(n => {
+        minX = Math.min(minX, n.x);
+        minY = Math.min(minY, n.y);
+        maxX = Math.max(maxX, n.x + (n.width || 170));
+        maxY = Math.max(maxY, n.y + (n.height || 150));
+      });
+    }
+
+    const contentWidth = Math.max(maxX - minX, 400);
+    const contentHeight = Math.max(maxY - minY, 300);
+
+    const winW = window.innerWidth || 1280;
+    const winH = window.innerHeight || 800;
+
+    // Allocate safe margins for Top Navbar (~70px) and Left Canvas Palette (~70px)
+    const paddingLeft = 70;
+    const paddingRight = 40;
+    const paddingTop = dockPosition === 'bottom' ? 35 : 75;
+    const paddingBottom = dockPosition === 'bottom' ? 75 : 45;
+
+    const availableWidth = Math.max(winW - paddingLeft - paddingRight, 300);
+    const availableHeight = Math.max(winH - paddingTop - paddingBottom, 300);
+
+    // Calculate fit scale with breathing room
+    const scaleX = availableWidth / (contentWidth + 40);
+    const scaleY = availableHeight / (contentHeight + 40);
+    const fitScale = Math.min(Math.max(Math.min(scaleX, scaleY), 0.22), 1.05);
+
+    // Calculate centered pan
+    const centerPanX = paddingLeft + (availableWidth - contentWidth * fitScale) / 2 - minX * fitScale;
+    const centerPanY = paddingTop + (availableHeight - contentHeight * fitScale) / 2 - minY * fitScale;
+
+    setScale(Number(fitScale.toFixed(2)));
+    setPan({ x: Math.round(centerPanX), y: Math.round(centerPanY) });
+  }, [activeTemplate, stickyNotes, dockPosition]);
+
+  // Auto-fit canvas to window on initial load and window resize
+  useEffect(() => {
+    handleFitScreen();
+
+    let resizeTimer = null;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        handleFitScreen();
+      }, 120);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [handleFitScreen]);
 
   // Action Items Handlers
   const handleAddActionItem = (item) => {
