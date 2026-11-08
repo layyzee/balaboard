@@ -164,6 +164,7 @@ export default function App() {
     currentUser,
     roomId,
     onRemoteStateSync: (state) => {
+      const isSandboxMode = roomId === 'sandbox' || window.location.search.includes('demo') || window.location.search.includes('sandbox');
       if (state.templateId && TEMPLATES[state.templateId]) {
         setActiveTemplate(TEMPLATES[state.templateId]);
       }
@@ -174,8 +175,17 @@ export default function App() {
       if (state.drawings) setDrawings(state.drawings);
       if (state.connectors) setConnectors(state.connectors);
       if (state.currentPhaseIndex !== undefined) setCurrentPhaseIndex(state.currentPhaseIndex);
-      if (state.areNotesRevealed !== undefined) setAreNotesRevealed(state.areNotesRevealed);
-      if (state.meetingSettings) setMeetingSettings(state.meetingSettings);
+      if (isSandboxMode) {
+        setAreNotesRevealed(true);
+      } else if (state.areNotesRevealed !== undefined) {
+        setAreNotesRevealed(state.areNotesRevealed);
+      }
+      if (state.meetingSettings) {
+        setMeetingSettings(prev => ({
+          ...state.meetingSettings,
+          isPrivateMode: isSandboxMode ? false : state.meetingSettings.isPrivateMode
+        }));
+      }
     },
     onRemoteNoteCreate: (note) => {
       playSound('pop');
@@ -245,14 +255,16 @@ export default function App() {
     localStorage.setItem('balaboard_sticky_notes', JSON.stringify(RECRUITER_SANDBOX_NOTES));
     setActionItems(RECRUITER_SANDBOX_ACTIONS);
     localStorage.setItem('balaboard_action_items', JSON.stringify(RECRUITER_SANDBOX_ACTIONS));
+    setMeetingSettings(prev => ({ ...prev, isPrivateMode: false }));
     setAreNotesRevealed(true);
+    sendRevealToggle(true);
     setScale(0.85);
     setPan({ x: 80, y: 110 });
     sendNotesBatch(RECRUITER_SANDBOX_NOTES);
     sendTemplateChange(TEMPLATES.quick.id, RECRUITER_SANDBOX_NOTES);
     sendActionItemsUpdate(RECRUITER_SANDBOX_ACTIONS);
     setIsTourOpen(true);
-  }, [sendNotesBatch, sendTemplateChange, sendActionItemsUpdate]);
+  }, [sendNotesBatch, sendTemplateChange, sendActionItemsUpdate, sendRevealToggle]);
 
   const handleCreateCleanRoom = () => {
     const randomSuffix = Math.random().toString(36).substring(2, 7);

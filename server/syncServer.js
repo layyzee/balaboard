@@ -160,6 +160,11 @@ wss.on('connection', (ws) => {
         const room = getOrCreateRoom(currentRoomId);
         room.clients.set(ws, currentUser);
 
+        if (currentRoomId === 'sandbox') {
+          room.areNotesRevealed = true;
+          room.meetingSettings.isPrivateMode = false;
+        }
+
         // If client provided initial state and room is empty, adopt it
         if (room.stickyNotes.length === 0 && payload.initialNotes?.length > 0) {
           room.stickyNotes = payload.initialNotes;
