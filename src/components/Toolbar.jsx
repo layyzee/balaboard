@@ -31,7 +31,8 @@ import {
   Radio,
   Headphones,
   Music,
-  BarChart2
+  BarChart2,
+  Rocket
 } from 'lucide-react';
 import { PASTEL_COLORS, ICEBREAKER_QUESTIONS } from '../constants/templates';
 import { playSound } from '../utils/sound';
@@ -80,7 +81,8 @@ export default function Toolbar({
   onReleaseSpotlight,
   // Phase 14: Demo Tour & Analytics
   onStartDemoTour,
-  onOpenAnalytics
+  onOpenAnalytics,
+  onOpenSandboxModal
 }) {
   // Timer State
   const initialSeconds = (meetingSettings?.durationMinutes || 45) * 60;
@@ -290,6 +292,18 @@ export default function Toolbar({
             </button>
           )}
 
+          {/* Quick Sandbox Hub Button (Slim) */}
+          {onOpenSandboxModal && (
+            <button
+              onClick={onOpenSandboxModal}
+              className="px-2 py-0.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold flex items-center gap-1 shadow-xs"
+              title="1-Click Recruiter Sandbox"
+            >
+              <Rocket size={11} className="text-amber-700" />
+              <span>Sandbox</span>
+            </button>
+          )}
+
           {/* Quick Analytics Button (Slim) */}
           {onOpenAnalytics && (
             <button
@@ -351,6 +365,18 @@ export default function Toolbar({
               <Sparkles size={12} className="animate-spin text-amber-200" />
               <span className="hidden 2xl:inline">Demo Tour</span>
               <span className="hidden sm:inline 2xl:hidden">Tour</span>
+            </button>
+          )}
+
+          {/* 1-Click Recruiter Sandbox Hub */}
+          {onOpenSandboxModal && (
+            <button
+              onClick={onOpenSandboxModal}
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-all border border-amber-200/80 shadow-xs hover:scale-105 active:scale-95"
+              title="1-Click Recruiter Demo Sandbox & Room Hub"
+            >
+              <Rocket size={12} className="text-amber-600" />
+              <span className="hidden xl:inline">Sandbox</span>
             </button>
           )}
         </div>

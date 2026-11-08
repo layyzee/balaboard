@@ -15,6 +15,8 @@ import IntegrationsModal from './components/IntegrationsModal';
 import JiraIssueModal from './components/JiraIssueModal';
 import RecruiterTourModal from './components/RecruiterTourModal';
 import RetroAnalyticsModal from './components/RetroAnalyticsModal';
+import RecruiterSandboxModal from './components/RecruiterSandboxModal';
+import { RECRUITER_SANDBOX_NOTES, RECRUITER_SANDBOX_ACTIONS } from './constants/sandboxData';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
 import { playSound } from './utils/sound';
 
@@ -128,6 +130,14 @@ export default function App() {
   const [isSpotlightingActive, setIsSpotlightingActive] = useState(false);
   const [activeSpotlight, setActiveSpotlight] = useState(null);
 
+  // Recruiter Sandbox & Room Hub Landing Modal State
+  const [isSandboxModalOpen, setIsSandboxModalOpen] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sandbox') === 'true' || params.get('welcome') === 'true') return true;
+    if (!params.get('room') && !localStorage.getItem('balaboard_seen_welcome')) return true;
+    return false;
+  });
+
   const canvasContainerRef = useRef(null);
 
   // Real-Time Multiplayer WebSocket Synchronization
@@ -227,6 +237,35 @@ export default function App() {
       sendSpotlight(pan, scale);
     }
   }, [pan, scale, isSpotlightingActive, sendSpotlight]);
+
+  // Recruiter 1-Click Sandbox Handlers
+  const handleLaunchRecruiterSandbox = useCallback(() => {
+    setActiveTemplate(TEMPLATES.quick);
+    setStickyNotes(RECRUITER_SANDBOX_NOTES);
+    localStorage.setItem('balaboard_sticky_notes', JSON.stringify(RECRUITER_SANDBOX_NOTES));
+    setActionItems(RECRUITER_SANDBOX_ACTIONS);
+    localStorage.setItem('balaboard_action_items', JSON.stringify(RECRUITER_SANDBOX_ACTIONS));
+    setAreNotesRevealed(true);
+    setScale(0.85);
+    setPan({ x: 80, y: 110 });
+    sendNotesBatch(RECRUITER_SANDBOX_NOTES);
+    sendTemplateChange(TEMPLATES.quick.id, RECRUITER_SANDBOX_NOTES);
+    sendActionItemsUpdate(RECRUITER_SANDBOX_ACTIONS);
+    setIsTourOpen(true);
+  }, [sendNotesBatch, sendTemplateChange, sendActionItemsUpdate]);
+
+  const handleCreateCleanRoom = () => {
+    const randomSuffix = Math.random().toString(36).substring(2, 7);
+    window.location.search = `?room=sprint-${randomSuffix}`;
+  };
+
+  // Auto-launch sandbox if query param ?sandbox=true or ?demo=true
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sandbox') === 'true' || params.get('demo') === 'true') {
+      handleLaunchRecruiterSandbox();
+    }
+  }, [handleLaunchRecruiterSandbox]);
 
   // Local Persistence
   useEffect(() => {
@@ -728,6 +767,7 @@ export default function App() {
         }}
         onStartDemoTour={() => setIsTourOpen(true)}
         onOpenAnalytics={() => setIsAnalyticsOpen(true)}
+        onOpenSandboxModal={() => setIsSandboxModalOpen(true)}
       />
 
       {/* Spotlight Audience Banner */}
@@ -898,6 +938,15 @@ export default function App() {
         stickyNotes={stickyNotes}
         actionItems={actionItems}
         onlineUsers={onlineUsers}
+      />
+
+      {/* Recruiter 1-Click Sandbox & Room Hub Landing Screen */}
+      <RecruiterSandboxModal
+        isOpen={isSandboxModalOpen}
+        onClose={() => setIsSandboxModalOpen(false)}
+        onLaunchSandbox={handleLaunchRecruiterSandbox}
+        onCreateCleanRoom={handleCreateCleanRoom}
+        currentRoomId={roomId}
       />
     </div>
   );
