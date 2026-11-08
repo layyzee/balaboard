@@ -767,6 +767,7 @@ export default function App() {
         onFitScreen={handleFitScreen}
         showGrid={showGrid}
         onToggleGrid={() => setShowGrid(!showGrid)}
+        dockPosition={dockPosition}
       />
 
       {/* Pre-Retro Meeting Hub & Miro Template Library Modal */}

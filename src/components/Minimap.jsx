@@ -8,12 +8,14 @@ export default function Minimap({
   onResetZoom,
   onFitScreen,
   showGrid,
-  onToggleGrid
+  onToggleGrid,
+  dockPosition = 'top'
 }) {
   const zoomPercent = Math.round(scale * 100);
+  const bottomClass = dockPosition === 'bottom' ? 'bottom-16' : 'bottom-4';
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 flex items-center gap-1 bg-white/95 backdrop-blur-md border border-slate-200/80 px-2 py-1.5 rounded-2xl shadow-xl text-xs text-slate-700">
+    <div className={`fixed ${bottomClass} right-4 z-40 flex items-center gap-1 bg-white/95 backdrop-blur-md border border-slate-200/80 px-2 py-1.5 rounded-2xl shadow-xl text-xs text-slate-700`}>
       {/* Zoom Out Button */}
       <button
         onClick={onZoomOut}
