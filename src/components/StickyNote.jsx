@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Trash2, Palette, ThumbsUp, Check, EyeOff, Smile, Tag, GitFork } from 'lucide-react';
+import { Trash2, Palette, ThumbsUp, Check, EyeOff, Smile, Tag, GitFork, UserCheck, UserX, User } from 'lucide-react';
 import { PASTEL_COLORS } from '../constants/templates';
+import { PRESET_USERS } from './UserLoginModal';
 import { playSound } from '../utils/sound';
 
 const QUICK_EMOJIS = ['👍', '❤️', '🚀', '🔥', '💡'];
@@ -26,11 +27,13 @@ export default function StickyNote({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showReactionsMenu, setShowReactionsMenu] = useState(false);
   const [showTagsMenu, setShowTagsMenu] = useState(false);
+  const [showAuthorMenu, setShowAuthorMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const textareaRef = useRef(null);
   const noteRef = useRef(null);
+  const authorMenuRef = useRef(null);
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -79,6 +82,25 @@ export default function StickyNote({
     onUpdate(note.id, { color });
     setShowColorPicker(false);
   };
+
+  const handleSetAuthor = (newAuthor, e) => {
+    e.stopPropagation();
+    playSound('pop');
+    onUpdate(note.id, { author: newAuthor });
+    setShowAuthorMenu(false);
+  };
+
+  // Close author menu when clicking outside
+  useEffect(() => {
+    if (!showAuthorMenu) return;
+    const handleClickOutside = (e) => {
+      if (authorMenuRef.current && !authorMenuRef.current.contains(e.target)) {
+        setShowAuthorMenu(false);
+      }
+    };
+    window.addEventListener('mousedown', handleClickOutside);
+    return () => window.removeEventListener('mousedown', handleClickOutside);
+  }, [showAuthorMenu]);
 
   // Dragging logic (disabled when drawing or connecting)
   const handleMouseDown = (e) => {
@@ -379,20 +401,96 @@ export default function StickyNote({
       </div>
 
       {/* Footer: Author Badge & Reactions / Dot Voting Counter */}
-      <div className="flex items-center justify-between pt-1 border-t border-black/5">
-        {/* Author Tag */}
-        <div className="flex items-center gap-1">
-          {note.author ? (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/60 text-slate-700 border border-black/5 truncate max-w-[80px]">
-              {note.author}
-            </span>
-          ) : (
-            <span className="text-[9px] text-slate-500 font-medium">Anonymous</span>
-          )}
-          {isPrivateWriting && isAuthor && !areNotesRevealed && (
-            <span className="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 rounded-sm">
-              You
-            </span>
+      <div className="flex items-center justify-between pt-1 border-t border-black/5 relative">
+        {/* Author Tag (Click-to-Claim / Toggle Anonymous) */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAuthorMenu(!showAuthorMenu);
+              setShowColorPicker(false);
+              setShowReactionsMenu(false);
+              setShowTagsMenu(false);
+            }}
+            className="flex items-center gap-1 group/author hover:scale-105 active:scale-95 transition-all text-left"
+            title="Click to claim note or change author"
+          >
+            {note.author && note.author !== 'Anonymous' ? (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-white/70 hover:bg-white text-slate-700 border border-black/10 truncate max-w-[85px] shadow-2xs group-hover/author:border-indigo-400 group-hover/author:text-indigo-700 flex items-center gap-1">
+                <span className="truncate">{note.author}</span>
+                <span className="text-[8px] opacity-40 group-hover/author:opacity-100">✏️</span>
+              </span>
+            ) : (
+              <span className="text-[9px] text-slate-500 font-semibold px-1.5 py-0.5 rounded-md bg-black/5 hover:bg-white hover:text-indigo-600 border border-transparent hover:border-black/10 transition-colors flex items-center gap-1">
+                <span>🎭 Anonymous</span>
+                <span className="text-[8px] opacity-40">✏️</span>
+              </span>
+            )}
+            {isPrivateWriting && isAuthor && !areNotesRevealed && (
+              <span className="text-[9px] font-bold text-indigo-700 bg-indigo-100/80 px-1 rounded-sm">
+                You
+              </span>
+            )}
+          </button>
+
+          {/* Author Claim & Assign Popover Dropdown */}
+          {showAuthorMenu && (
+            <div
+              ref={authorMenuRef}
+              onClick={(e) => e.stopPropagation()}
+              className="absolute bottom-7 left-0 z-50 bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-2.5 flex flex-col gap-1.5 w-48 animate-fadeIn text-slate-800"
+            >
+              <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-1 pb-1 border-b border-slate-100 flex items-center justify-between">
+                <span>Note Author</span>
+                <span className="text-[9px] text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded-full">1-Click</span>
+              </div>
+
+              {/* Quick Action 1: Claim as Current User */}
+              <button
+                onClick={(e) => handleSetAuthor(currentUser?.name || 'Me', e)}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-xl text-xs font-bold transition-all text-left ${
+                  note.author === (currentUser?.name || 'Me')
+                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                    : 'hover:bg-slate-50 text-slate-700'
+                }`}
+              >
+                <UserCheck size={13} className="text-indigo-600 shrink-0" />
+                <span className="truncate">Claim as <strong>{currentUser?.name || 'Me'}</strong></span>
+              </button>
+
+              {/* Quick Action 2: Make Anonymous */}
+              <button
+                onClick={(e) => handleSetAuthor('Anonymous', e)}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-xl text-xs font-medium transition-all text-left ${
+                  !note.author || note.author === 'Anonymous'
+                    ? 'bg-amber-50 text-amber-800 font-bold border border-amber-200'
+                    : 'hover:bg-slate-50 text-slate-600'
+                }`}
+              >
+                <UserX size={13} className="text-amber-600 shrink-0" />
+                <span>Make Anonymous 🎭</span>
+              </button>
+
+              {/* Quick Teammate Chips */}
+              <div className="pt-1 border-t border-slate-100">
+                <span className="text-[9px] font-bold text-slate-400 uppercase px-1">Assign Teammate</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {PRESET_USERS.map((u) => (
+                    <button
+                      key={u.id}
+                      onClick={(e) => handleSetAuthor(u.name, e)}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all ${
+                        note.author === u.name
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                          : 'bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      {u.avatar} {u.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
