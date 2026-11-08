@@ -13,6 +13,8 @@ import ActionItemsDrawer from './components/ActionItemsDrawer';
 import AiRetroModal from './components/AiRetroModal';
 import IntegrationsModal from './components/IntegrationsModal';
 import JiraIssueModal from './components/JiraIssueModal';
+import RecruiterTourModal from './components/RecruiterTourModal';
+import RetroAnalyticsModal from './components/RetroAnalyticsModal';
 import { useRealtimeSync } from './hooks/useRealtimeSync';
 import { playSound } from './utils/sound';
 
@@ -121,6 +123,8 @@ export default function App() {
   const [isIntegrationsModalOpen, setIsIntegrationsModalOpen] = useState(false);
   const [isJiraModalOpen, setIsJiraModalOpen] = useState(false);
   const [jiraSourceItem, setJiraSourceItem] = useState(null);
+  const [isTourOpen, setIsTourOpen] = useState(false);
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isSpotlightingActive, setIsSpotlightingActive] = useState(false);
   const [activeSpotlight, setActiveSpotlight] = useState(null);
 
@@ -722,6 +726,8 @@ export default function App() {
           setIsSpotlightingActive(false);
           sendSpotlightRelease();
         }}
+        onStartDemoTour={() => setIsTourOpen(true)}
+        onOpenAnalytics={() => setIsAnalyticsOpen(true)}
       />
 
       {/* Spotlight Audience Banner */}
@@ -866,6 +872,32 @@ export default function App() {
         activeTemplate={activeTemplate}
         meetingSettings={meetingSettings}
         onCreateJiraIssue={handleCreateJiraIssue}
+      />
+
+      {/* Recruiter & Team Interactive Guided Demo Tour (Phase 14 - Option 1) */}
+      <RecruiterTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        onToggleRevealNotes={handleToggleRevealNotes}
+        areNotesRevealed={areNotesRevealed}
+        onAutoCluster={handleAutoCluster}
+        onOpenJiraModal={handleOpenJiraModal}
+        onOpenAnalytics={() => setIsAnalyticsOpen(true)}
+        onSetPanAndScale={(newScale, newPan) => {
+          setScale(newScale);
+          setPan(newPan);
+        }}
+      />
+
+      {/* Retrospective Analytics & Team Health Dashboard (Phase 14 - Option 2) */}
+      <RetroAnalyticsModal
+        isOpen={isAnalyticsOpen}
+        onClose={() => setIsAnalyticsOpen(false)}
+        activeTemplate={activeTemplate}
+        meetingSettings={meetingSettings}
+        stickyNotes={stickyNotes}
+        actionItems={actionItems}
+        onlineUsers={onlineUsers}
       />
     </div>
   );

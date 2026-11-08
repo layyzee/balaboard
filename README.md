@@ -108,13 +108,22 @@ Jump straight into structured retrospectives with pre-built interactive template
 - Attaches an interactive, live Atlassian Jira badge (`[Jira] SCRUM-173 ↗`) with direct ticket links.
 - Interactive sandbox mode enabled so interviewers and teammates can test the Jira workflow live without enterprise credentials.
 
+### 15. ⚡ 60-Second Interactive Guided Tour
+- One-click interactive tour engineered for recruiters, hiring managers, and new team onboarding.
+- Smoothly auto-pans, auto-zooms, and demonstrates the core agile workflow step-by-step: private reflection, simultaneous reveals, AI theme clustering, dot voting, and Jira issue creation.
+
+### 16. 📊 Retrospective Analytics & Team Health Dashboard
+- Computes real-time team metrics: Sentiment Index, active contributor ratios, consensus votes, and backlog commitment conversion.
+- Visual sentiment distribution bar (Celebrations vs. Ideas vs. Friction).
+- 1-click export of an Executive Markdown Report tailored for Engineering Directors, VPs, and Slack/Confluence digests.
+
 <br/>
 
 <div align="center">
 
-| Minimized Floating Island | Docked to Bottom Layout | Direct Jira Integration |
+| 60s Guided Demo Tour | Team Health Analytics | Direct Jira Integration |
 |:---:|:---:|:---:|
-| ![Minimized](docs/screenshots/minimized.png) | ![Docked Bottom](docs/screenshots/docked_bottom.png) | ![Jira Integration](docs/screenshots/jira_integration.png) |
+| ![Guided Tour](docs/screenshots/guided_tour.png) | ![Team Analytics](docs/screenshots/team_analytics.png) | ![Jira Integration](docs/screenshots/jira_integration.png) |
 
 </div>
 

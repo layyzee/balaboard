@@ -30,7 +30,8 @@ import {
   X,
   Radio,
   Headphones,
-  Music
+  Music,
+  BarChart2
 } from 'lucide-react';
 import { PASTEL_COLORS, ICEBREAKER_QUESTIONS } from '../constants/templates';
 import { playSound } from '../utils/sound';
@@ -76,7 +77,10 @@ export default function Toolbar({
   // Spotlight & Power Tools
   onSpotlightEveryone,
   isSpotlightingActive = false,
-  onReleaseSpotlight
+  onReleaseSpotlight,
+  // Phase 14: Demo Tour & Analytics
+  onStartDemoTour,
+  onOpenAnalytics
 }) {
   // Timer State
   const initialSeconds = (meetingSettings?.durationMinutes || 45) * 60;
@@ -242,6 +246,29 @@ export default function Toolbar({
             <span>Share</span>
           </button>
 
+          {/* Quick Demo Tour Button (Slim) */}
+          {onStartDemoTour && (
+            <button
+              onClick={onStartDemoTour}
+              className="px-2 py-0.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold flex items-center gap-1 shadow-xs"
+              title="Start 60-Second Guided Tour"
+            >
+              <Sparkles size={11} className="text-amber-200" />
+              <span>Tour</span>
+            </button>
+          )}
+
+          {/* Quick Analytics Button (Slim) */}
+          {onOpenAnalytics && (
+            <button
+              onClick={onOpenAnalytics}
+              className="p-1 rounded-lg hover:bg-slate-100 text-purple-700 transition-colors"
+              title="Team Health & Retrospective Analytics"
+            >
+              <BarChart2 size={13} />
+            </button>
+          )}
+
           {/* Expand Button */}
           <button
             onClick={onToggleMinimize}
@@ -281,6 +308,19 @@ export default function Toolbar({
             <span className="truncate max-w-[85px] sm:max-w-[125px]">{activeTemplate?.title?.split('(')[0] || 'Templates'}</span>
             <ChevronDown size={12} className="text-indigo-400 shrink-0" />
           </button>
+
+          {/* Recruiter & Team Guided Demo Tour */}
+          {onStartDemoTour && (
+            <button
+              onClick={onStartDemoTour}
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-bold shadow-xs transition-all hover:scale-105 active:scale-95"
+              title="Start 60-Second Guided Tour for Recruiters & Teams"
+            >
+              <Sparkles size={12} className="animate-spin text-amber-200" />
+              <span className="hidden xl:inline">Demo Tour</span>
+              <span className="xl:hidden">Tour</span>
+            </button>
+          )}
         </div>
 
         {/* Center Section: Facilitation Stepper & Retro Controls */}
@@ -592,6 +632,17 @@ export default function Toolbar({
               )}
             </button>
 
+            {/* Retro Analytics & Team Health Report Button */}
+            {onOpenAnalytics && (
+              <button
+                onClick={onOpenAnalytics}
+                className="p-1 sm:px-1.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200/70 text-xs font-semibold transition-all"
+                title="View Retrospective Analytics & Team Health Report"
+              >
+                <BarChart2 size={14} />
+              </button>
+            )}
+
             {/* Export Menu Dropdown */}
             <div className="relative">
               <button
@@ -604,6 +655,18 @@ export default function Toolbar({
 
               {showExportMenu && (
                 <div className={`absolute ${dockPosition === 'bottom' ? 'bottom-10' : 'top-10'} right-0 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-2xl z-50 text-xs w-52 space-y-1 animate-fadeIn`}>
+                  {onOpenAnalytics && (
+                    <button
+                      onClick={() => {
+                        setShowExportMenu(false);
+                        onOpenAnalytics();
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-purple-50 text-purple-700 font-medium"
+                    >
+                      <BarChart2 size={14} className="text-purple-600" />
+                      <span>Retrospective Analytics</span>
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setShowExportMenu(false);
