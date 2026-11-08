@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Handwritten font for realistic sticky note look */
+.font-handwriting {
+  font-family: 'Kalam', cursive, sans-serif;
+}
+
+/* Miro dot grid pattern */
+.canvas-grid-dots {
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, #cbd5e1 1.2px, transparent 1.2px);
+}
+
+/* Smooth zoom transition */
+.canvas-viewport {
+  transform-origin: 0 0;
+  will-change: transform;
+}
